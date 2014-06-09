@@ -23,5 +23,5 @@ for f in $filenames; do
     done < <(grep '>' $f) |
         # This may be overly simplistic. It seems that ncbi-blast just grabs
         # the first "word", but I may be wrong.
-        perl -pe 's/^>(\S+).*?(\d+)$/$1 $2/'
+        perl -pe 's/^>(\S+).*?(\d+)$/$1\t$2/'
 done
