@@ -1,0 +1,2 @@
+Glycine_max.faa
+Zea_mays.mito.fna
