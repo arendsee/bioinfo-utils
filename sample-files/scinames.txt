@@ -1,0 +1,3 @@
+Arabidopsis thaliana
+Glycine_max
+Eukaryota
