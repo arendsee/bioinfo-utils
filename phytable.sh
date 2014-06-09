@@ -31,9 +31,7 @@ scinames=`echo $scinames | tr ' ' '\n' | sort -u | tr '\n' ' '`
 ENTREZ='http://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
 
 taxids=''
-echo "Retrieving lineages from entrez" > /dev/stderr
 for sciname in $scinames; do
-    echo -n '.' > /dev/stderr
     taxids="$taxids "`wget -O - \
         "$ENTREZ/esearch.fcgi?db=taxonomy&term=$sciname" 2> /dev/null | \
         xmlstarlet sel -t -m '/eSearchResult/IdList' -v Id -o ','`
@@ -54,5 +52,3 @@ wget -O - "$ENTREZ/efetch.fcgi?db=taxonomy&id=$taxids"  2> /dev/null | \
         -o '|' \
         -v Lineage -n | \
         perl -pe 's/;\s/;/g' | tr ' ' '_' | tr '|' ' ' | perl -pe 's/, / /g' 
-
-echo " Done" > /dev/stderr
