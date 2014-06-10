@@ -24,13 +24,12 @@ while read line; do
     allfiles=$allfiles' '`ls $line`    
 done < $3
 
-base=$PWD/$focal_species-strata
-
 if [[ -z $focal_species ]]; then
     echo "Please provide a focal species" > /dev/stderr
     exit
 fi
 
+base=$PWD/$focal_species-strata
 if [[ -d "$base" ]]; then
     rm -Rf $base
 fi
@@ -62,10 +61,10 @@ function make-dir {
     mkdir $1
 }
 
-echo "Synlinking stuff into this directory and building taxid map" > /dev/stderr
+echo "Symlinking stuff into this directory and building taxid map" > /dev/stderr
 
 # Maps seqids to taxids (needed for making blast databases)
-taxidmap="$PWD/taxidmap.txt"
+taxidmap="taxidmap.txt"
 echo -n '' > $taxidmap
 
 older=${flin[0]}
@@ -80,7 +79,7 @@ for newer in ${flin[@]:1}; do
         # Change reps to pattern, e.g. Zea_mays|Glycine_max
         reppat=`echo $reps | perl -pe 's/[,\s]/\|/g; s/\|$//'`
         # Find files that match this pattern
-        for f in `echo $allfiles | grep -E "/($reppat)[^/]*$"`; do
+        for f in `ls $allfiles | grep -E "/($reppat)[^/]*$"`; do
             cp -fs $f $older
             fasta2blast_taxidmap $f >> $taxidmap
         done
@@ -89,13 +88,13 @@ for newer in ${flin[@]:1}; do
 done
 
 # Genus
-genus=`echo $allfiles | grep -P '\/'${flin[-2]}'_(?!'${flin[-1]}')[^\/]*'`
+genus=`ls $allfiles | grep -P '\/'${flin[-2]}'_(?!'${flin[-1]}')[^\/]*'`
 echo -e "\t${flin[-2]}" > /dev/stderr
 make-dir ${flin[-2]}
 for g in $genus; do cp -s $g ${flin[-2]}/`basename $g`; done
-
+ 
 # Species
-species=`echo $allfiles | grep -P '\/'${flin[-2]}'_'${flin[-1]}'[^\/]*'`
+species=`ls $allfiles | grep -P '\/'${flin[-2]}'_'${flin[-1]}'[^\/]*'`
 echo -e "\t${flin[-2]}_${flin[-1]}" > /dev/stderr
 make-dir ${flin[-2]}_${flin[-1]}
 for g in $species; do cp -s $g ${flin[-2]}_${flin[-1]}/`basename $g`; done
