@@ -19,7 +19,7 @@ for f in $filenames; do
         xmlstarlet sel -t -v '/eSearchResult/IdList/Id'`
     sleep 0.3s # To prevent NCBI from complaining
     while read header; do
-        echo "$header $taxid"
+        echo -e "$header\t$taxid"
     done < <(grep '>' $f) |
         # This may be overly simplistic. It seems that ncbi-blast just grabs
         # the first "word", but I may be wrong.
