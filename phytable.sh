@@ -51,4 +51,4 @@ wget -O - "$ENTREZ/efetch.fcgi?db=taxonomy&id=$taxids"  2> /dev/null | \
             -v "text()" -o ',' -b \
         -o '|' \
         -v Lineage -n | \
-        perl -pe 's/;\s/;/g' | tr ' ' '_' | tr '|' ' ' | perl -pe 's/, / /g' 
+        perl -pe 's/;\s/;/g' | tr ' ' '_' | tr '|' '\t'
