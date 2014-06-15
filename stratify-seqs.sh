@@ -38,7 +38,7 @@ cd $base
 
 ENTREZ='http://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
 
-geninfo=GENINFO
+geninfo=geninfo.tab
 echo -n 'Retrieving lineages from entrez ... '
 echo $include | phytable > $geninfo
 echo 'done'
@@ -64,7 +64,7 @@ function make-dir {
 echo "Symlinking stuff into this directory and building taxid map" > /dev/stderr
 
 # Maps seqids to taxids (needed for making blast databases)
-taxidmap="taxidmap.txt"
+taxidmap=taxidmap.tab
 echo -n '' > $taxidmap
 
 older=${flin[0]}
@@ -82,21 +82,32 @@ for newer in ${flin[@]:1}; do
         for f in `ls $allfiles | grep -E "/($reppat)[^/]*$"`; do
             cp -fs $f $older
             fasta2blast_taxidmap $f >> $taxidmap
+            echo `md5sum $f | perl -pe 's|\S*/||'` `cat $f | smof wc` >> $older/MANIFEST
         done
     fi
     older=$newer
 done
 
+genus_name=${flin[-2]}
+species_name=${flin[-1]}
+
 # Genus
-genus=`ls $allfiles | grep -P '\/'${flin[-2]}'_(?!'${flin[-1]}')[^\/]*'`
-echo -e "\t${flin[-2]}" > /dev/stderr
-make-dir ${flin[-2]}
-for g in $genus; do cp -s $g ${flin[-2]}/`basename $g`; done
+genus=`ls $allfiles | grep -P '\/'$genus_name'_(?!'$species_name')[^\/]*'`
+echo -e "\t$genus_name" > /dev/stderr
+make-dir $genus_name
+for g in $genus; do
+    cp -s $g $base/$genus_name/`basename $g`
+    echo `md5sum $g | perl -pe 's|\S*/||'` `cat $g | smof wc` >> $genus_name/MANIFEST
+done
  
 # Species
-species=`ls $allfiles | grep -P '\/'${flin[-2]}'_'${flin[-1]}'[^\/]*'`
-echo -e "\t${flin[-2]}_${flin[-1]}" > /dev/stderr
-make-dir ${flin[-2]}_${flin[-1]}
-for g in $species; do cp -s $g ${flin[-2]}_${flin[-1]}/`basename $g`; done
+species=`ls $allfiles | grep -P '\/'${genus_name}_${species_name}'[^\/]*'`
+echo -e "\t${genus_name}_${species_name}" > /dev/stderr
+species_dir=${genus_name}_${species_name}
+make-dir $species_name
+for g in $species; do
+    cp -s $g $base/$species_name/`basename $g`
+    echo `md5sum $g | perl -pe 's|\S*/||'` `cat $g | smof wc` >> $species_name/MANIFEST
+done
 
 echo "All Done" > /dev/stderr
