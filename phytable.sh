@@ -51,4 +51,11 @@ wget -O - "$ENTREZ/efetch.fcgi?db=taxonomy&id=$taxids"  2> /dev/null | \
             -v "text()" -o ',' -b \
         -o '|' \
         -v Lineage -n | \
-        perl -pe 's/;\s/;/g' | tr ' ' '_' | tr '|' '\t'
+        # Remove spaces in lineage
+        perl -pe 's/;\s/;/g' |
+        # Substitute underscores spaces in names
+        tr ' ' '_' |
+        # Change delimiter to tab
+        tr '|' '\t' |
+        # Remove terminal commas
+        perl -pe 's/,(\s)/$1/g'
