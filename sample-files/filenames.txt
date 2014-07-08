@@ -1,2 +1,4 @@
-Glycine_max.faa
+Arabidopsis_thaliana.faa
+Arabidopsis_lyrata.faa
+Pseudomonas aeruginosa.faa
 Zea_mays.mito.fna
