@@ -18,5 +18,8 @@ for sciname in $scinames; do
     sciname=`echo $sciname | tr '_' '+'`
     wget -O - "$base/esearch.fcgi?db=taxonomy&term=$sciname" 2> /dev/null |
         xmlstarlet sel -t -v '/eSearchResult/IdList/Id'
+    if [ $? -ne 0 ]; then
+        echo NA
+    fi
     sleep 0.3s # To prevent NCBI from complaining
 done
