@@ -3,14 +3,24 @@
 use warnings;
 use strict;
 
-my @flin = @{&get_lineage(shift)};
+my $focal_species = shift;
+die "Please provide a focal species" if not $focal_species;
+my @flin = @{&get_lineage($focal_species)};
 
 while(<>){
     next unless /\S/;
+    if(/^NA/){
+        print "NA\tNA\n";
+        next;
+    }
     my @olin = @{&get_lineage($_)};
     my $stratum = 0;
     foreach (0..($#flin)){
-        if($olin[$stratum] eq $flin[$stratum]){
+        if($_ > $#olin or $_ > $#flin){
+            $stratum++;
+            last;
+        }
+        if($olin[$_] eq $flin[$_]){
             $stratum++;
         }
     }
@@ -29,8 +39,6 @@ sub get_lineage {
             $in = `echo $in | taxid2lineage`;  
         }
     }
-
-    die "Couldn't get focal lineage" if not $in =~ /;/;
 
     $in =~ s/^\s+|\s+$//g;
     $in =~ s/;\s/;/g;
@@ -59,4 +67,5 @@ The out species input is a list of lineages (semicolon delimited, NCBI taxonomy 
 =head1 EXAMPLES
 
  # This will retrieve the lineage for Mus_mus from entrez
+ # This requires sciname2taxid and taxid2lineage be in the path
  $ cat lineages.txt | lineage2stratum Mus_mus
