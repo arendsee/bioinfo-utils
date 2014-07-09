@@ -1,3 +1,4 @@
 Arabidopsis thaliana
 Glycine_max
 Eukaryota
+Arabidopsis_lyrata
