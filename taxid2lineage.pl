@@ -3,7 +3,12 @@
 use strict;
 use warnings;
 
-my $taxids = join ',', <STDIN>;
+my @in = @ARGV;
+
+if(scalar @in == 0){
+    @in = <STDIN>;
+
+my $taxids = join ',', @in;
 $taxids =~ s/\s//g;
 
 my $base='http://eutils.ncbi.nlm.nih.gov/entrez/eutils/';
