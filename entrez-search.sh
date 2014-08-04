@@ -1,6 +1,12 @@
 #!/bin/bash
 
-retmax=20
+# Arguments:
+# -d database name
+# -t search terms
+# -r maximum number of results to retrieve (default = 500)
+
+db= eterm= retmax=500
+
 while getopts "d:t:r:" opt; do
     case $opt in
         d)
