@@ -1,9 +1,15 @@
 #!/bin/bash
 
-db= ids= retmax=500 rettype=
+db= ids= retmax=500 rettype= version=1.0.0
 
-while getopts "d:i:t:r:" opt; do
+while getopts "hd:i:t:r:" opt; do
     case $opt in
+        h)
+            echo "entrez-fetch v$version"
+            echo "  -d database name"
+            echo "  -i ids (read from STDIN be default)"
+            echo "  -r maximum number of records to retrieve (default=500)"
+            exit 0 ;;
         d)
             db=$OPTARG
             if [[ "$db" =~ ' ' ]];then
