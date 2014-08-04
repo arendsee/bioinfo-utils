@@ -5,10 +5,15 @@
 # -t search terms
 # -r maximum number of results to retrieve (default = 500)
 
-db= eterm= retmax=500
+db= eterm= retmax=500 version=0.0.1
 
-while getopts "d:t:r:" opt; do
+while getopts "hd:t:r:" opt; do
     case $opt in
+        h)
+            echo "entrez-search $version"
+            echo "-d database name"
+            echo "-t search terms"
+            echo "-r maximum number of records to retrieve (default=500)"
         d)
             db=$OPTARG
             if [[ "$db" =~ ' ' ]];then
