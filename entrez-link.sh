@@ -1,8 +1,8 @@
 #!/bin/bash
 
-dbfrom= dbto= ids= retmax=500 version=1.0.0 one2one=0
+dbfrom= dbto= ids= retmax=500 version=1.0.0 idmap=0 parse=0
 
-while getopts "hr:i:t:f:u" opt; do
+while getopts "hr:i:t:f:up" opt; do
     case $opt in
         h)
             echo "entrez-link v$version"
@@ -10,7 +10,8 @@ while getopts "hr:i:t:f:u" opt; do
             echo "  -i NUM ids (read from STDIN be default)"
             echo "  -f STR from database name"
             echo "  -t STR to database name"
-            echo "  -u     map ids one-to-one"
+            echo "  -u     map one fromdb id to n todb ids"
+            echo "  -p     parse the xml output"
             exit 0 ;;
         r)
             retmax=$OPTARG
@@ -35,7 +36,9 @@ while getopts "hr:i:t:f:u" opt; do
             fi
             ;;
         u)
-            one2one=1 ;;
+            idmap=1 ;;
+        p)
+            parse=1 ;;
     esac 
 done
 
@@ -46,11 +49,35 @@ if [[ $ids == '' ]]; then
     ids=$(echo $ids | sed 's/,$//; s/^,//')
 fi
 
-if [[ $one2one == 1 ]]; then
+if [[ $idmap == 1 ]]; then
     ids=$(echo $ids | sed 's/,/\&id=/g')
 fi
 
 url="http://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?"
 url=$url"dbfrom=$dbfrom&db=$dbto&id=$ids&retmax=$retmax"
 
-wget -O /dev/stdout $url 2> /dev/null
+function _ret {
+    wget -O /dev/stdout $url 2> /dev/null
+}
+
+if [[ $parse == 1 ]]; then
+    if [[ $idmap == 1 ]]; then
+        _ret | xmlstarlet sel -t \
+                              -m '/eLinkResult/LinkSet' \
+                              -v 'IdList/Id' \
+                              -o $'\t' \
+                              -m 'LinkSetDb/Link' \
+                              -v 'Id' \
+                              -o ',' \
+                              -b \
+                              -n |
+        awk '{i=$1; gsub(",", "\n"i"\t", $0); print}'
+    else
+        _ret | xmlstarlet sel -t \
+                              -m 'eLinkResult/LinkSet/LinkSetDb/Link' \
+                              -v 'Id' \
+                              -n
+    fi
+else
+    _ret
+fi
