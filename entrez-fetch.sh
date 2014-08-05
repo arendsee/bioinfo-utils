@@ -9,6 +9,7 @@ while getopts "hd:i:t:r:" opt; do
             echo "  -d database name"
             echo "  -i ids (read from STDIN be default)"
             echo "  -r maximum number of records to retrieve (default=500)"
+            echo "  -t retrieval type (e.g. fasta, gb)"
             exit 0 ;;
         d)
             db=$OPTARG
