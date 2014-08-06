@@ -5,12 +5,12 @@
 # -t search terms
 # -r maximum number of results to retrieve (default = 500)
 
-db= eterm= retmax=500 version=1.0.0
+db= eterm= retmax=500
 
 while getopts "hd:t:r:" opt; do
     case $opt in
         h)
-            echo "entrez-search v$version"
+            echo "entrez-search"
             echo "  -d database name"
             echo "  -t search terms"
             echo "  -r maximum number of records to retrieve (default=500)"
@@ -34,8 +34,13 @@ while getopts "hd:t:r:" opt; do
 done
 
 url="http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?"
-url=$url"db=$db&term=$eterm&retmax=$retmax"
+url=$url"db=$db&term=$eterm&retmax=$retmax&usehistory=y"
 
-wget -O /dev/stdout $url 2> /dev/null |
-    xmlstarlet sel -t -m '/eSearchResult/IdList' -v 'Id' -n |
-    sed '/^$/d'
+out=$(wget -qO /dev/stdout $url | 
+      xmlstarlet sel -t -m '/eSearchResult' -v 'WebEnv' -n -v 'QueryKey')
+webenv=$(echo $out | awk '{print $1}')
+query_key=$(echo $out | awk '{print $2}')
+
+
+
+echo "db=$db&WebEnv=$webenv $query_key $retmax"

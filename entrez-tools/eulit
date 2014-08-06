@@ -1,11 +1,11 @@
 #!/bin/bash
 
-sterms= retmax=10 version=1.0.0
+sterms= retmax=10
 
 while getopts "ht:r:" opt; do
     case $opt in
         h)
-            echo "entrez-lit v$version"
+            echo "entrez-lit"
             echo "  -t search terms"
             echo "  -r maximum number of records to retrieve (default=500)"
             exit 0 ;;

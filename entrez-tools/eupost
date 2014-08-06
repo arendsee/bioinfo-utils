@@ -1,0 +1,58 @@
+#!/bin/bash
+
+db= ids=
+
+# Read ids from STDIN
+if [[ $(tty) == 'not a tty' ]]; then
+    ids=$(cat)
+fi
+
+while getopts "hd:i:f:" opt; do
+    case $opt in
+        h)
+            echo "eupost - post uids to entrez"
+            echo "  -d database name"
+            echo "  -i ids (read from STDIN be default)"
+            echo "example:"
+            echo "eupost -d protein -f id-list.txt | eufet -t fasta"
+            exit 0 ;;
+        d)
+            db=$OPTARG
+            if [[ "$db" =~ ' ' ]];then
+                echo "database must be a single word" > /dev/stderr
+                exit 1
+            fi
+            ;;
+        i)
+            ids="$ids "$(tr ',' ' ' <<< $OPTARG) ;;
+        f)
+            ids="$ids "$(cat $OPTARG)
+    esac 
+done
+
+epost="http://eutils.ncbi.nlm.nih.gov/entrez/eutils/epost.fcgi?db=$db"
+
+function postids {
+    if [[ ! -z $1 ]]; then
+        opts="&id=$1&retmax=1000&WebEnv=$webenv"
+        out=$(wget -qO /dev/stdout "${epost}&$opts" |
+                xmlstarlet sel -t -m '/ePostResult' -v 'WebEnv' -n -v 'QueryKey')
+        webenv=$(echo $out | awk '{print $1}')
+        query_key=$(echo $out | awk '{print $2}')
+    fi
+}
+
+i= idsout= query_key= webenv= retmax=500
+for id in $ids; do
+    i=$(( i + 1 ))
+    idsout=$idsout$([[ -z $idsout ]] && echo $id || echo ",$id" )
+    if [[ $(( $i % $retmax )) -eq 0 ]]; then
+        postids $idsout
+        idsout=
+    fi
+done
+postids $idsout
+
+
+
+echo "db=$db&WebEnv=$webenv 1 $query_key $retmax"

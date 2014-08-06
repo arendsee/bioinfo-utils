@@ -1,0 +1,25 @@
+#!/bin/bash
+
+db= rettype= cmd=efetch
+
+while getopts "ht:s" opt; do
+    case $opt in
+        h)
+            echo "entrez-fetch"
+            echo "  -t retrieval type (e.g. fasta, gb)"
+            echo "  -s retrieve summaries (esummary)"
+            exit 0 ;;
+        t)
+            rettype=$OPTARG ;;
+        s) 
+            cmd=esummary
+    esac 
+done
+
+read opts first_key nkeys retmax
+
+base="http://eutils.ncbi.nlm.nih.gov/entrez/eutils/$cmd.fcgi"
+for k in `seq $first_key $nkeys`; do
+    loopopts="retmax=$retmax&query_key=$k"
+    wget -qO /dev/stdout "$base?$opts&$loopopts&rettype=$rettype"
+done | more
