@@ -22,11 +22,10 @@ done
 
 read opts first_key nkeys retmax
 opts=$(sed 's/db=/fromdb=/' <<< $opts)
+opts=$(sed -r 's/(retmax=[0-9]*)/retmax=1000000/' <<< $opts)
 
 base="http://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi"
 opts="$opts&db=$dbto&usehistory=y"
-
-echo $opts > /dev/stderr
 
 for k in `seq $first_key $nkeys`; do
     out=$(wget -qO /dev/stdout "$base?$opts&query_key=$k&cmd=neighbor_history" | 
@@ -37,4 +36,4 @@ for k in `seq $first_key $nkeys`; do
     query_key=$(echo $out | awk '{print $2}')
 done
 
-echo "db=$dbto&WebEnv=$webenv $(( $nkeys + 1 )) $query_key $retmax"
+echo "db=$dbto&WebEnv=$webenv $(( $nkeys + 1 )) $query_key 1000000"
