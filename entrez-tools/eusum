@@ -1,3 +1,8 @@
 #!/bin/bash
 
+if [[ $1 == '-h' ]]; then
+    echo 'eusum - alias for `eufet -s`' > /dev/stderr
+    exit 0
+fi
+
 echo $(cat) | eufet -s
