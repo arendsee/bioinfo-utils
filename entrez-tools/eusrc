@@ -43,4 +43,4 @@ query_key=$(echo $out | awk '{print $2}')
 
 
 
-echo "db=$db&WebEnv=$webenv $query_key $retmax"
+echo "db=$db&WebEnv=$webenv 1 $query_key $retmax"
