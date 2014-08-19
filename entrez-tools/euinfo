@@ -1,0 +1,60 @@
+#!/bin/bash
+
+db=
+
+while getopts "hrfF:lL:d:" opt; do
+    case $opt in
+        h)
+            echo "euinfo - get info about entrez databases"
+            echo "  -d DB  retrieve info about particular database"
+            echo "  -r     get raw XML for DB"
+            echo "  -f     list fields in database DB"
+            echo "  -F FD  get info for field FD from database DB"
+            echo "  -l     list possible links to other databases"
+            echo "  -L LN  get info for link LN from database DB"
+            exit 0 ;;
+        d)
+            db=$OPTARG
+            if [[ "$db" =~ ' ' ]];then
+                echo "database must be a single word" > /dev/stderr
+                exit 1
+            fi
+            ;;
+        r) raw=1 ;;
+        f) fields=1 ;;
+        F) field=$OPTARG ;;
+        l) links=1 ;;
+        L) link=$OPTARG ;;
+    esac 
+done
+
+base="http://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi"
+
+function ret { wget -qO /dev/stdout "$base?db=$db"; }
+
+# If no database was given, print list of all databases
+if [[ -z $db ]]; then
+    ret | sed -nr 's/.*<DbName>([^<]+).*/\1/p' | column -x
+else
+    # Print fields in space delimited columns
+    if [[ ! -z $fields ]]; then
+        ret | xmlstarlet sel -t -m 'eInfoResult/DbInfo/FieldList/Field' -v 'Name' -n | column -x
+    # Print info for FIELD
+    elif [[ ! -z $field ]]; then
+        ret | awk "/<Name>$field<\/Name>/"',/<\/Field>/' |
+              sed -nr 's/.*<([^>]+)>([^<]+)<.*/\1: \2/p'
+    # Print linkable databases in columns
+    elif [[ ! -z $links ]]; then
+        ret | xmlstarlet sel -t -m 'eInfoResult/DbInfo/LinkList/Link' -v 'DbTo' -n |
+              sort -u | column -x
+    # Print info for LINK
+    elif [[ ! -z $link ]]; then
+        ret | awk -v l=">$link<" 'BEGIN{RS="<Link>"; FS="DbTo"} $2 ~ l' |
+              sed '/<[A-Z]/!d' |
+              perl -pe 's/\s*<(\w+)>([^<]+).*/$1: $2/' |
+              awk 'NR > 2 && $1 ~ /Name/ { sub($0, "\n"$0) }; {print}'
+    # Print raw XML
+    elif [[ ! -z $raw ]]; then
+        ret
+    fi
+fi
