@@ -82,7 +82,7 @@ for newer in ${flin[@]:1}; do
         for f in `ls $allfiles | grep -E "/($reppat)[^/]*$"`; do
             cp -fs $f $older
             fasta2blast_taxidmap $f >> $taxidmap
-            echo `md5sum $f | perl -pe 's|\S*/||'` `cat $f | smof wc` >> $older/MANIFEST
+            echo `md5sum $f | perl -pe 's|\S*/||'` `smof wc < "$f"` >> $older/MANIFEST
         done
     fi
     older=$newer
@@ -97,7 +97,7 @@ echo -e "\t$genus_name" > /dev/stderr
 make-dir $genus_name
 for g in $genus; do
     cp -s $g $base/$genus_name/`basename $g`
-    echo `md5sum $g | perl -pe 's|\S*/||'` `cat $g | smof wc` >> $genus_name/MANIFEST
+    echo `md5sum $g | perl -pe 's|\S*/||'` `smof wc < "$g"` >> $genus_name/MANIFEST
 done
  
 # Species
@@ -107,7 +107,7 @@ species_dir=${genus_name}_${species_name}
 make-dir $species_name
 for g in $species; do
     cp -s $g $base/$species_name/`basename $g`
-    echo `md5sum $g | perl -pe 's|\S*/||'` `cat $g | smof wc` >> $species_name/MANIFEST
+    echo `md5sum $g | perl -pe 's|\S*/||'` `smof wc < "$g"` >> $species_name/MANIFEST
 done
 
 echo "All Done" > /dev/stderr
