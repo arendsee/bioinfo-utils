@@ -1,4 +1,5 @@
 #!/bin/bash
+set -u
 
 # This script prepares a series of blast databases containing representatives
 # from the Arabidopsis thaliana phylostrata
@@ -12,14 +13,18 @@
 # ARG1: focal species (e.g. Arabidopsis_thaliana)
 # ARG2: include file (all the way to extension)
 # ARG3: supplementary places to look, accepting only species from include file
+#       For example, if you have a folder full of organelle genomes but only
+#       want to include them if a nuclear genome also exists.
 focal_species=$1
 
 include=''
+[[ -r $2 ]] || ( echo "Cannot open $2"; exit 1 )
 while read line; do
     include=$include' '`ls $line`    
 done < $2
 
 allfiles=$include
+[[ -r $3 ]] || ( echo "Cannot open $3"; exit 1 )
 while read line; do
     allfiles=$allfiles' '`ls $line`    
 done < $3
@@ -29,7 +34,7 @@ if [[ -z $focal_species ]]; then
     exit
 fi
 
-base=$PWD/$focal_species-strata
+base=$PWD/"$focal_species"-strata
 if [[ -d "$base" ]]; then
     rm -Rf $base
 fi
@@ -43,8 +48,8 @@ echo -n 'Retrieving lineages from entrez ... '
 echo $include | phytable > $geninfo
 echo 'done'
 
-flin=(`grep $focal_species $geninfo | awk '{print $3}' | tr ';' ' '`)
-flin[${#flin[@]}]=`echo $focal_species | perl -pe 's/\S+?_//'`
+flin=(`grep "$focal_species" $geninfo | awk '{print $3}' | tr ';' ' '`)
+flin[${#flin[@]}]=`echo "$focal_species" | perl -pe 's/\S+?_//'`
 
 # Make taxon to stratum list, e.g.
 # cellular_organisms
@@ -52,7 +57,7 @@ flin[${#flin[@]}]=`echo $focal_species | perl -pe 's/\S+?_//'`
 # Viridiplantae
 # ...
 # Arabidopsis
-echo ${flin[*]} | tr ' ' '\n' > ${focal_species}-lineage.txt
+echo ${flin[*]} | tr ' ' '\n' > "${focal_species}"-lineage.txt
 
 function make-dir {
     if [ -d $1 ]; then
@@ -61,11 +66,11 @@ function make-dir {
     mkdir $1
 }
 
-echo "Symlinking stuff into this directory and building taxid map" > /dev/stderr
+echo "Symlinking stuff into this directory" > /dev/stderr
 
 # Maps seqids to taxids (needed for making blast databases)
-taxidmap=taxidmap.tab
-echo -n '' > $taxidmap
+# taxidmap=taxidmap.tab
+# echo -n '' > $taxidmap
 
 older=${flin[0]}
 for newer in ${flin[@]:1}; do
@@ -81,7 +86,7 @@ for newer in ${flin[@]:1}; do
         # Find files that match this pattern
         for f in `ls $allfiles | grep -E "/($reppat)[^/]*$"`; do
             cp -fs $f $older
-            fasta2blast_taxidmap $f >> $taxidmap
+            # fasta2blast_taxidmap $f >> $taxidmap
             echo `md5sum $f | perl -pe 's|\S*/||'` `smof wc < "$f"` >> $older/MANIFEST
         done
     fi
