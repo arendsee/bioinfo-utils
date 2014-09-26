@@ -4,8 +4,10 @@ set -u
 while getopts "hd:up" opt; do
     case $opt in
         h)
-            echo "entrez-link"
+            echo "entrez-link - link records between databases"
             echo "  -d STR to database name"
+            echo "EXAMPLES:"
+            echo "eusrc -d pubmed -t 'human[ORGN] NFYA' | eulink -d protein | eufet -t fasta"
             exit 0 ;;
         d)
             dbto=$OPTARG
