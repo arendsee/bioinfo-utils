@@ -21,7 +21,7 @@ while getopts "hd:t:r:" opt; do
             fi
             ;;
         t)
-            eterm=$(echo $OPTARG | tr ' ' '+') ;;
+            eterm=$(echo "$OPTARG" | tr ' ' '+') ;;
         r)
             retmax=$OPTARG
             if [[ $retmax =~ '^[0-9]' ]]; then

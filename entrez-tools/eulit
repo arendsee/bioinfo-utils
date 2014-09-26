@@ -23,7 +23,7 @@ while getopts "ht:r:" opt; do
     esac 
 done
 
-eusrc -d pubmed -t $sterms -r $retmax |
+eusrc -d pubmed -t "$sterms" -r $retmax |
     eufet -t xml |
     xmlstarlet sel -t \
                    -m 'PubmedArticleSet/PubmedArticle/MedlineCitation/Article' \
