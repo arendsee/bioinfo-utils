@@ -14,8 +14,13 @@ while getopts "hd:i:f:" opt; do
             echo "eupost - post uids to entrez"
             echo "  -d database name"
             echo "  -i ids (read from STDIN be default)"
-            echo "example:"
+            echo "  -f read ids from file"
+            echo "EXAMPLES:"
+            echo "eupost -d protein < id-list.txt | eufet -t fasta"
             echo "eupost -d protein -f id-list.txt | eufet -t fasta"
+            echo "eupost -d protein -i 186509637 | eufet -t fasta"
+            echo "eupost -d protein -i 186509637 | eulink -d taxonomy | eufet"
+            echo "eupost -d protein -i 186509637 | eulink -d taxonomy | eusum"
             exit 0 ;;
         d)
             db=$OPTARG
