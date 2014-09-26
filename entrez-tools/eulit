@@ -10,7 +10,9 @@ while getopts "ht:r:" opt; do
             echo "  -t search terms"
             echo "  -r maximum number of records to retrieve (default=500)"
             echo "EXAMPLE:"
-            echo "eulit -t 'Scolopendra+cingulata' -r 1"
+            echo "$ eulit -t 'Scolopendra+cingulata' -r 1"
+            echo "Count the number of papers in a field"
+            echo "$ eulit -t 'centipede' -r 10000 | grep -c '^Title:'"
             exit 0 ;;
         t)
             sterms="$OPTARG" ;;
