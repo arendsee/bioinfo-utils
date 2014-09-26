@@ -1,4 +1,5 @@
 #!/bin/bash
+set -u
 
 while getopts "hd:up" opt; do
     case $opt in

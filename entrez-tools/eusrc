@@ -1,9 +1,5 @@
 #!/bin/bash
-
-# Arguments:
-# -d database name
-# -t search terms
-# -r maximum number of results to retrieve (default = 500)
+set -u
 
 db= eterm= retmax=500
 
