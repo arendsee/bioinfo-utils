@@ -10,6 +10,8 @@ while getopts "hd:t:r:" opt; do
             echo "  -d database name"
             echo "  -t search terms"
             echo "  -r maximum number of records to retrieve (default=500)"
+            echo "EXAMPLES:"
+            echo "eusrc -d pubmed -t 'Scolopendra+cingulata' | eulink -d taxonomy | eusum"
             exit 0 ;;
         d)
             db=$OPTARG

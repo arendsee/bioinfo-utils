@@ -6,7 +6,7 @@ db= rettype= cmd=efetch
 while getopts "ht:s" opt; do
     case $opt in
         h)
-            echo "entrez-fetch"
+            echo "entrez-fetch - retrieves data (terminal command of eu* piplines)"
             echo "  -t retrieval type (e.g. fasta, gb)"
             echo "  -s retrieve summaries (esummary)"
             exit 0 ;;

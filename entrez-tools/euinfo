@@ -13,6 +13,13 @@ while getopts "hrfF:lL:d:" opt; do
             echo "  -F FD  get info for field FD from database DB"
             echo "  -l     list possible links to other databases"
             echo "  -L LN  get info for link LN from database DB"
+            echo "EXAMPLES:"
+            echo "List all Entrez databases"
+            echo "$ euinfo"
+            echo "$ euinfo -d protein -f"
+            echo "$ euinfo -d protein -F SQID"
+            echo "$ euinfo -d protein -l"
+            echo "$ euinfo -d protein -L nuccore"
             exit 0 ;;
         d)
             db=$OPTARG
