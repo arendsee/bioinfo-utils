@@ -9,5 +9,5 @@ $aft = $aft ? $aft : '';
 
 while(<>){
     $_ =~ s/$for(\d+\.?\d*)$aft/$for . FormatSigFigs($1, 3) . $aft/ge; 
-    print $_, "\n";
+    print $_;
 }
