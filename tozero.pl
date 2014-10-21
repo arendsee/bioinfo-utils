@@ -9,13 +9,11 @@
 my $min = shift;
 $min = $min ? $min : 0.001;
 my $for = shift;
-$for = $for ? $for : '';
+$for = $for ? qr/$for/ : '';
 my $aft = shift;
-$aft = $aft ? $aft : '';
-
-print "$min|$for|$aft|\n";
+$aft = $aft ? qr/$aft/ : '';
 
 while(<>){
-    $_ =~ s/($for)(\d\.?\d+)($aft)/$1 . ($2 < $min ? 0 : $3) . $aft/ge; 
-    print $_, "\n";
+    $_ =~ s/($for)(\d\.?\d+)($aft)/$1 . ($2 < $min ? 0 : $2) . $3/ge; 
+    print $_;
 }
