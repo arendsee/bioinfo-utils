@@ -3,11 +3,11 @@
 use Math::SigFigs qw(:all);
 
 my $for = shift;
-$for = $for ? $for : '';
+$for = $for ? qr/$for/ : '';
 my $aft = shift;
-$aft = $aft ? $aft : '';
+$aft = $aft ? qr/$aft/ : '';
 
 while(<>){
-    $_ =~ s/$for(\d+\.?\d*)$aft/$for . FormatSigFigs($1, 3) . $aft/ge; 
+    $_ =~ s/($for)(\d+\.?\d*)($aft)/$1 . FormatSigFigs($2, 3) . $3/ge; 
     print $_;
 }
