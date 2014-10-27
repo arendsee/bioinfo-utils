@@ -7,18 +7,23 @@ my @in = @ARGV;
 
 if(scalar @in == 0){
     @in = <STDIN>;
+}
 
 my $taxids = join ',', @in;
 $taxids =~ s/\s//g;
 
-my $base='http://eutils.ncbi.nlm.nih.gov/entrez/eutils/';
-my @data = `wget -O - "$base/efetch.fcgi?db=taxonomy&id=$taxids" 2> /dev/null |
-            xmlstarlet sel -t -m '/TaxaSet/Taxon' -v 'TaxId' -o "\t" -v 'Lineage' -n -b`;
+my $base='http://eutils.ncbi.nlm.nih.gov/entrez/eutils';
+
+
+my $del = ',,,';
+my @data = `wget -qO - "$base/efetch.fcgi?db=taxonomy&id=$taxids" |
+    xmlstarlet sel -t -m 'TaxaSet/Taxon' -v 'TaxId' -o $del -v 'Lineage' -o $del -v 'ScientificName' -n`;
 
 my %lin = ();
 foreach (@data){
     next if not /\S/;
-    my($taxid, $lineage) = split("\t", $_);
+    my($taxid, $lineage, $sciname) = split($del, $_);
+    $lineage = "$lineage; $sciname";
     $lineage =~ s/;\s/;/g;
     $lineage =~ tr/ /_/;
     $lin{$taxid} = $lineage;
