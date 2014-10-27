@@ -17,14 +17,13 @@ while(<>){
     my $stratum = 0;
     foreach (0..($#flin)){
         if($_ > $#olin or $_ > $#flin){
-            $stratum++;
             last;
         }
         if($olin[$_] eq $flin[$_]){
             $stratum++;
         }
     }
-    print "$stratum\t$flin[$stratum-1]\n";
+    print "$stratum\t$flin[$stratum-1]\t$olin[-1]\n";
 }
 
 sub get_lineage {
@@ -32,7 +31,7 @@ sub get_lineage {
     $in =~ s/^\s+|\s+$//g;
     if(not $in =~ /;/){
         if($in =~ /^[A-Z]/){
-            $in = `echo $in | sciname2taxid`;
+            $in = `echo $in | sciname2taxid -s`;
             chomp $in;
         }
         if($in =~ /^\d+$/){
@@ -68,4 +67,4 @@ The out species input is a list of lineages (semicolon delimited, NCBI taxonomy 
 
  # This will retrieve the lineage for Mus_mus from entrez
  # This requires sciname2taxid and taxid2lineage be in the path
- $ cat lineages.txt | lineage2stratum Mus_mus
+ $ lineage2stratum Mus_mus < lineages.txt
