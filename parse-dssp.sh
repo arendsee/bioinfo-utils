@@ -1,4 +1,5 @@
 #!/bin/bash
+set -u
 
 # Input: a PDB file
 # Output: TAB-delimited line containing secondary structure counts
@@ -14,7 +15,7 @@ dssp -i $1 |
     sed '1d' |
     cut -b17 |
     sort | uniq -c |
-    awk -v name=$(basename $j | sed 's/\.pdb//') '
+    awk -v name=$(basename $1 | sed 's/\.pdb//') '
         BEGIN{
             OFS="\t"
             E = 0
