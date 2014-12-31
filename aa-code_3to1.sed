@@ -1,0 +1,21 @@
+#!/bin/sed -f
+s/ALA/A/g
+s/CYS/C/g
+s/ASP/D/g
+s/GLU/E/g
+s/PHE/F/g
+s/GLY/G/g
+s/HIS/H/g
+s/ILE/I/g
+s/LYS/K/g
+s/LEU/L/g
+s/MET/M/g
+s/ASP/N/g
+s/PRO/P/g
+s/GLN/Q/g
+s/ARG/R/g
+s/SER/S/g
+s/THR/T/g
+s/VAL/V/g
+s/TRP/W/g
+s/TYR/Y/g
