@@ -10,7 +10,7 @@ s/ILE/I/g
 s/LYS/K/g
 s/LEU/L/g
 s/MET/M/g
-s/ASP/N/g
+s/ASN/N/g
 s/PRO/P/g
 s/GLN/Q/g
 s/ARG/R/g
