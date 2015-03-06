@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 
 # Adapted from Federico Giorgi (https://www.biostars.org/p/46281/)
-# Modified such that it is no longer a broken piece of shit
 
 use strict;
 use warnings;
