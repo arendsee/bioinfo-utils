@@ -50,7 +50,7 @@ close GFF;
 sub record_mRNA {
     # Collect CDSs and extract sequence of the previous mRNA
     my $mRNA_seq;
-    @mRNA = sort { $a->[1] < $b->[1] } @mRNA
+    @mRNA = sort { $a->[1] > $b->[1] } @mRNA;
     foreach my $coord (@mRNA) {
         $mRNA_seq .= $db->seq( $coord->[0], $coord->[1] => $coord->[2] );
     }
