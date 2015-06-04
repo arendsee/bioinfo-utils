@@ -1,7 +1,7 @@
 #!/bin/bash
 set -u
 
-db=
+db= raw= fields= field= links= link=
 
 while getopts "hrfF:lL:d:" opt; do
     case $opt in
