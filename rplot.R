@@ -55,7 +55,7 @@ if(isatty(stdin())){
 f <- file("stdin")
 open(f)
 
-d <- read.table(f, header=args$header, sep=args$seq, comment.char=args$comment_char)
+d <- read.table(f, header=args$header, sep=args$sep, comment.char=args$comment_char)
 
 pdf('rplot-output.pdf')
 if(args$type == 'point' || args$type == 'plot'){
