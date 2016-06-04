@@ -27,7 +27,7 @@ while getopts "hd:" opt; do
     esac 
 done
 
-[[ -d $bibdb ]] || echo -e "Bibtex file $bibdb not found\n" && usage
+[[ -r $bibdb ]] || (echo -e "Bibtex file $bibdb not found\n" && usage)
 
 find . -name '*.tex' -o -name '*.Rnw' |
     parallel 'tr -d " \t\n" < {}' |
