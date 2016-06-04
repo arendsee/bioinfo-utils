@@ -17,9 +17,7 @@ EOF
 exit 0
 }
 
-# print help with no arguments
-[[ $# -eq 0 ]] && usage
-
+bibdb=~/Dropbox/notes/all-refs.bib
 while getopts "hd:" opt; do
     case $opt in
         h)
@@ -29,7 +27,7 @@ while getopts "hd:" opt; do
     esac 
 done
 
-bibdb=${bibdb:-~/Dropbox/notes/all-refs.bib}
+[[ -d $bibdb ]] || echo -e "Bibtex file $bibdb not found\n" && usage
 
 find . -name '*.tex' -o -name '*.Rnw' |
     parallel 'tr -d " \t\n" < {}' |
