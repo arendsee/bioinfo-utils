@@ -35,4 +35,5 @@ find . -name '*.tex' -o -name '*.Rnw' |
     sed -r 's/\\cite\{(.*)\}/\1/' |
     tr ',' '\n' |
     sort -u |
+    sed '/^$/d' |
     parallel "bibtool -i $bibdb -X {}"
