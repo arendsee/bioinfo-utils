@@ -26,7 +26,14 @@ cat > $filename << EOL
 #SBATCH --output=out_$base.%J
 EOL
 
-[[ `echo "$@" | grep -- '--time'` ]] || echo '#SBATCH --time=2:00:00' >> $filename
+[[ `echo "$@" | grep -- '--nodes'` ]] || \
+    echo '#SBATCH --nodes=1' >> $filename
+
+[[ `echo "$@" | grep -- '--cpus-per-task'` ]] || \
+    echo '#SBATCH --cpus-per-task=8' >> $filename
+
+[[ `echo "$@" | grep -- '--time'` ]] || \
+    echo '#SBATCH --time=2:00:00' >> $filename
 
 for o in $@
 do
