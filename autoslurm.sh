@@ -1,14 +1,29 @@
 #!/usr/bin/env bash
 
-# DESCRIPTION:
-#   Wraps the given code in a slurm file and runs it
-#   The default walltime is 2 hours 
-#   Any number of slurm options may follow the script
-# USAGE:
-#   # to wrap and submit a script:
-#   ./autoslurm.sh mycode.sh [options]
-#   # to kill the thing
-#   ./abort_mycode.sh
+usage (){
+cat << EOF
+DESCRIPTION:
+  Wraps the given code in a slurm file and runs it
+  The default walltime is 2 hours
+  Any number of slurm options may follow the script
+USAGE:
+  # to wrap and submit a script:
+  ./autoslurm.sh mycode.sh [options]
+  # to kill the thing
+  ./abort_mycode.sh
+EOF
+    exit 0
+}
+
+# print help with no arguments
+[[ $# -eq 0 ]] && usage
+
+while getopts "h" opt; do
+    case $opt in
+        h)
+            usage ;;
+    esac
+done
 
 code=$1
 shift
@@ -19,7 +34,7 @@ filename=${base}.pbs
 
 
 [[ -d archive ]] || mkdir archive
-mv err* out* archive || echo "All clean"
+mv "err_$base"* "out_$base"* archive || echo "All clean"
 if [[ -f $filename ]]
 then
     mv $filename archive/$filename.$RANDOM
