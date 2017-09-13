@@ -1,19 +1,40 @@
 #!/usr/bin/env bash
 
-# DESCRIPTION:
-#   Wraps the given code in a slurm file and runs it
-#   The default walltime is 2 hours 
-#   Any number of slurm options may follow the script
-# USAGE: ./autoslurm.sh mycode.sh [options]
+usage (){
+cat << EOF
+DESCRIPTION:
+  Wraps the given code in a slurm file and runs it
+  The default walltime is 2 hours
+  Any number of slurm options may follow the script
+USAGE:
+  # to wrap and submit a script:
+  ./autoslurm.sh mycode.sh [options]
+  # to kill the thing
+  ./abort_mycode.sh
+EOF
+    exit 0
+}
+
+# print help with no arguments
+[[ $# -eq 0 ]] && usage
+
+while getopts "h" opt; do
+    case $opt in
+        h)
+            usage ;;
+    esac
+done
 
 code=$1
 shift
 
 base=${code%.*}
-filename="__${base}.pbs"
+base=$(tr '/' '_' <<< $base)
+filename=${base}.pbs
+
 
 [[ -d archive ]] || mkdir archive
-mv -f err* out* archive
+mv "err_$base"* "out_$base"* archive || echo "All clean"
 if [[ -f $filename ]]
 then
     mv $filename archive/$filename.$RANDOM
@@ -26,13 +47,13 @@ cat > $filename << EOL
 #SBATCH --output=out_$base.%J
 EOL
 
-[[ `echo "$@" | grep -- '--nodes'` ]] || \
+[[ "$@" =~ '--nodes' ]] || \
     echo '#SBATCH --nodes=1' >> $filename
 
-[[ `echo "$@" | grep -- '--cpus-per-task'` ]] || \
+[[ "$@" =~ '--cpus-per-task' ]] || \
     echo '#SBATCH --cpus-per-task=8' >> $filename
 
-[[ `echo "$@" | grep -- '--time'` ]] || \
+[[ "$@" =~ '--time' ]] || \
     echo '#SBATCH --time=2:00:00' >> $filename
 
 for o in $@
@@ -40,11 +61,28 @@ do
     echo "#SBATCH $o"
 done >> $filename
 
-echo -e "\ncd \$SLURM_SUBMIT_DIR" >> $filename
+echo "base=$base" >> $filename
+echo >> $filename
+echo 'cd $SLURM_SUBMIT_DIR' >> $filename
+
+cat >> $filename << OUTER_EOL
+abort_cmd=abort_\${base}.sh
+cat > \$abort_cmd << INNER_EOL
+#!/usr/bin/env bash
+# Kill autoslurm run of '\$base'
+scancel \$SLURM_JOB_ID
+rm \$abort_cmd
+INNER_EOL
+chmod 755 \$abort_cmd
+OUTER_EOL
+
 
 cat $code |
     # remove the hasbang line
     grep -v '^#!' >> $filename
+
+# When the script completes, remove the abort script
+echo 'wait ; rm $abort_cmd' >> $filename
 
 # submit the script
 sbatch $filename && echo "Job Submitted" >&2 || echo "Failed to submit job" >&2
