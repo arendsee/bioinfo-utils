@@ -5,8 +5,8 @@ set -u
 # from the Arabidopsis thaliana phylostrata
 
 # REQUIRES:
-# - phytable
-# - fasta2blast_taxid
+# - phytable.sh
+# - fasta2blast_taxidmap.sh
 # These are available from https://github.com/zbwrnz/bioinfo-utils
 
 # INPUT:

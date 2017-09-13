@@ -1,5 +1,4 @@
 #!/bin/bash
-set -u
 
 if [[ $1 == '-h' ]]; then
     echo 'eusum - alias for `eufet -s`' > /dev/stderr

@@ -14,6 +14,13 @@ parser$add_argument(
 suppressPackageStartupMessages(library("rentrez"))
 
 parser$add_argument(
+  '-d', '--list-databases',
+  help='Print list of all supported databases',
+  action='store_true',
+  default=FALSE
+)
+
+parser$add_argument(
   '-s', '--summary',
   help='Print summary for given database'
 )
@@ -39,6 +46,8 @@ alldb <- entrez_dbs()
 
 if(length(args$summary) != 0){
   entrez_db_summary(args$summary)
+} else if(args$list_databases){
+  entrez_dbs()
 } else if(length(args$searchable) != 0){
   entrez_db_searchable(args$searchable)
 } else if(length(args$links) != 0){
