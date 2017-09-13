@@ -2,10 +2,16 @@
 # DESCRIPTION
 #     Adds exon phases to a gff3 file.
 # EXON PHASE CALCULATION
-#     This script calculates phase the right way, not the way specified in the
-#     GFF specifications. The phase corresponds to the intron insertion
-#     point (0 when between codons, 1 when after first codon
-#     letter, 2 when after 2nd codon letter).
+#     According to the GFF spec, the 8th column of a GFF represents phase. This
+#     field is required for all CDS entries. It represents the number of bases
+#     that must be trimmed off an exon to reach the first complete codon.
+# 
+#     This script calculates phase in a different, intron-centric manner: 0 when
+#     the intron inserts between codons, 1 when after first codon letter, and 2
+#     when after 2nd codon letter.
+#
+#     GFF spec: https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md
+#
 # INPUT NOTE
 #     This script assumes CDSs are in biological order (i.e. their starting
 #     positions will be in reverse order when they are on the minus strand).
